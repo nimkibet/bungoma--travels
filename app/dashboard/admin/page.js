@@ -37,6 +37,9 @@ function AddAttractionForm({ onSuccess, initialData }) {
     if (initialData) setForm(initialData);
   }, [initialData]);
 
+  const fileInputRef = useRef();
+  const [selectedImage, setSelectedImage] = useState(null);
+
   async function handleSubmit(e) {
     e.preventDefault();
     setLoading(true); setMsg(null);
@@ -46,10 +49,45 @@ function AddAttractionForm({ onSuccess, initialData }) {
         body: JSON.stringify(form),
       });
       const data = await res.json();
-      if (data.success) { setMsg({ type: "success", text: `✅ "${data.attraction.title}" added!` }); onSuccess?.(data.attraction); }
-      else setMsg({ type: "error", text: data.error });
-    } catch { setMsg({ type: "error", text: "Network error" }); }
+      if (!data.success) {
+        setMsg({ type: "error", text: data.error });
+        setLoading(false);
+        return;
+      }
+
+      // If an image was selected, upload it immediately
+      if (selectedImage) {
+        setMsg({ type: "success", text: `✅ Created! Uploading image...` });
+        try {
+          await fetch(`/api/attractions/${data.attraction.slug}/images`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ image: selectedImage }),
+          });
+        } catch (err) {
+          console.error("Image upload failed:", err);
+          // Don't fail the whole creation if image fails
+        }
+      }
+
+      setMsg({ type: "success", text: `✅ "${data.attraction.title}" successfully created!` });
+      // Reset image
+      setSelectedImage(null);
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      
+      onSuccess?.(data.attraction);
+    } catch { 
+      setMsg({ type: "error", text: "Network error" }); 
+    }
     finally { setLoading(false); }
+  }
+
+  function handleImageSelect(e) {
+    const file = e.target.files?.[0];
+    if (file && file.type.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (ev) => setSelectedImage(ev.target.result);
+      reader.readAsDataURL(file);
+    }
   }
 
   const inp = "w-full px-4 py-2.5 rounded-xl border border-sand-200 focus:outline-none focus:ring-2 focus:ring-terracotta-500 text-sm bg-white";
@@ -116,6 +154,35 @@ function AddAttractionForm({ onSuccess, initialData }) {
         </div>
       </div>
 
+      {/* Instant Image Upload */}
+      <div className="bg-[#F0F9FF] rounded-2xl border border-[#BAE6FD] p-5 space-y-4">
+        <h4 className="font-display font-bold text-[#0C4A6E]">Primary Image (Optional)</h4>
+        <div className="flex items-center gap-4">
+          {selectedImage ? (
+            <div className="relative w-24 h-24 rounded-lg overflow-hidden border border-[#0EA5E9]">
+              <Image src={selectedImage} alt="Preview" fill className="object-cover" />
+              <button 
+                type="button" 
+                onClick={() => { setSelectedImage(null); if (fileInputRef.current) fileInputRef.current.value = ""; }}
+                className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center text-xs"
+              >✕</button>
+            </div>
+          ) : (
+            <div 
+              onClick={() => fileInputRef.current?.click()}
+              className="w-24 h-24 rounded-lg border-2 border-dashed border-[#0EA5E9]/50 flex flex-col items-center justify-center cursor-pointer hover:bg-[#0EA5E9]/5 transition-colors"
+            >
+              <span className="text-2xl mb-1">📸</span>
+              <span className="text-[10px] text-[#0EA5E9] font-semibold uppercase">Add Image</span>
+            </div>
+          )}
+          <div className="flex-1">
+            <p className="text-xs text-[#0C4A6E]/70 mb-2">Select an image to be automatically uploaded and attached to this attraction the moment it is created.</p>
+            <input type="file" accept="image/*" ref={fileInputRef} onChange={handleImageSelect} className="text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[#0EA5E9]/10 file:text-[#0EA5E9] hover:file:bg-[#0EA5E9]/20 cursor-pointer" />
+          </div>
+        </div>
+      </div>
+
       <div className="flex items-center gap-2">
         <input id="attr-featured" type="checkbox" checked={form.featured} onChange={e => setForm(f => ({ ...f, featured: e.target.checked }))} className="w-4 h-4 accent-terracotta-600 rounded cursor-pointer" />
         <label htmlFor="attr-featured" className="text-sm font-medium text-obsidian-700 cursor-pointer">Mark as Featured</label>
@@ -127,8 +194,8 @@ function AddAttractionForm({ onSuccess, initialData }) {
         </div>
       )}
 
-      <button type="submit" id="add-attraction-submit" disabled={loading} className="btn-terracotta w-full py-3 disabled:opacity-50 disabled:cursor-not-allowed">
-        {loading ? "Adding Attraction..." : "Add Attraction"}
+      <button type="submit" id="add-attraction-submit" disabled={loading} className="w-full py-3.5 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white font-bold shadow-lg shadow-[#EA580C]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+        {loading ? "Processing..." : duplicateData ? "Duplicate Attraction" : "Create Attraction"}
       </button>
     </form>
   );
@@ -316,47 +383,35 @@ export default function AdminDashboardPage() {
   const tabs = ["overview", "add-attraction", "media-manager", "seo-manager"];
 
   return (
-    <div className="min-h-screen bg-sand-50">
-      {/* Admin header */}
-      <header className="bg-obsidian-900 text-white">
-        <div className="beadwork-border" />
-        <div className="max-w-7xl mx-auto px-4 md:px-8 py-5 flex items-center justify-between">
-          <div>
-            <h1 className="font-display text-2xl font-bold">🌍 Bungoma Tours Admin</h1>
-            <p className="text-white/60 text-sm mt-0.5">Content Management Dashboard</p>
-          </div>
-          <a href="/" className="text-sm text-white/70 hover:text-white transition-colors">← Back to Site</a>
-        </div>
-        {/* Tab nav */}
-        <div className="max-w-7xl mx-auto px-4 md:px-8">
-          <div className="flex gap-1 overflow-x-auto pb-0 scrollbar-hide">
-            {[
-              { id: "overview", label: "📊 Overview" },
-              { id: "add-attraction", label: "➕ Add Attraction" },
-              { id: "media-manager", label: "🖼 Media Manager" },
-              { id: "seo-manager", label: "🔍 SEO Manager" },
-            ].map(tab => (
-              <button
-                key={tab.id}
-                id={`admin-tab-${tab.id}`}
-                onClick={() => {
-                  setActiveTab(tab.id);
-                  if (tab.id === "add-attraction" && activeTab !== "add-attraction") {
-                    setDuplicateData(null); // Clear duplicate form if clicked directly
-                  }
-                }}
-                className={`px-5 py-3 text-sm font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer border-b-2 ${
-                  activeTab === tab.id ? "border-terracotta-500 text-terracotta-300 bg-white/5" : "border-transparent text-white/60 hover:text-white/90"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </header>
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Tab nav */}
+      <div className="bg-white p-1.5 rounded-xl inline-flex shadow-sm border border-[#BAE6FD]/50">
+        {[
+          { id: "overview", label: "📊 Overview" },
+          { id: "add-attraction", label: "➕ Add Attraction" },
+          { id: "media-manager", label: "🖼 Media Manager" },
+          { id: "seo-manager", label: "🔍 SEO Manager" },
+        ].map(tab => (
+          <button
+            key={tab.id}
+            id={`admin-tab-${tab.id}`}
+            onClick={() => {
+              setActiveTab(tab.id);
+              if (tab.id === "add-attraction" && activeTab !== "add-attraction") {
+                setDuplicateData(null);
+              }
+            }}
+            className={`px-5 py-2.5 text-sm font-semibold rounded-lg transition-all duration-200 cursor-pointer ${
+              activeTab === tab.id 
+                ? "bg-[#0EA5E9] text-white shadow-md shadow-[#0EA5E9]/20" 
+                : "text-[#0C4A6E]/60 hover:text-[#0C4A6E] hover:bg-[#F0F9FF]"
+            }`}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
 
-      <main className="max-w-7xl mx-auto px-4 md:px-8 py-8">
         {/* ── OVERVIEW ── */}
         {activeTab === "overview" && (
           <div className="space-y-8">
@@ -421,7 +476,7 @@ export default function AdminDashboardPage() {
                     </tbody>
                   </table>
                   {attractions.length === 0 && (
-                    <div className="text-center py-12 text-muted-foreground">
+                    <div className="text-center py-12 text-[#94A3B8]">
                       <div className="text-4xl mb-2">🌍</div>
                       <p>No attractions yet. Add your first one!</p>
                     </div>
@@ -436,15 +491,17 @@ export default function AdminDashboardPage() {
         {activeTab === "add-attraction" && (
           <div className="max-w-3xl">
             <div className="bg-white rounded-2xl shadow-card-terracotta p-8">
-              <h2 className="font-display text-2xl font-bold text-obsidian-800 mb-6 beadwork-border pb-4">
+              <h2 className="font-display text-2xl font-bold text-[#0C4A6E] mb-6 border-b border-[#BAE6FD] pb-4">
                 {duplicateData ? "Duplicate Attraction" : "Add New Attraction"}
               </h2>
               <AddAttractionForm onSuccess={(newAttraction) => { 
                 setDuplicateData(null); 
                 fetchAttractions(); 
                 if (newAttraction) {
+                  // We already uploaded the primary image in the form!
+                  // But we still select it so they can add more in the media manager
                   setSelectedAttraction(newAttraction);
-                  setActiveTab("media-manager");
+                  setActiveTab("overview");
                 }
               }} initialData={duplicateData} />
             </div>
@@ -578,7 +635,6 @@ export default function AdminDashboardPage() {
             </div>
           </div>
         )}
-      </main>
-    </div>
+      </div>
   );
 }

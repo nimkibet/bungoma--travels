@@ -8,13 +8,19 @@ import {
 
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
+import { getOneDoc } from "@/lib/db/getOperationDB";
 
 import routes from "@/data/routes.json";
 export default async function FormsLayout({ children }) {
   const session = await auth();
 
-  if (session?.user?.id) {
-    redirect(routes.profile.path);
+  if (session?.user?.email) {
+    const user = await getOneDoc("User", { email: session.user.email }, [], false);
+    if (user?.role === "admin") {
+      redirect("/dashboard/admin");
+    } else {
+      redirect(routes.profile.path);
+    }
   }
   return (
     <section className="my-20 mx-auto flex h-full w-[90%] items-stretch justify-between gap-[40px]">
