@@ -46,7 +46,7 @@ function AddAttractionForm({ onSuccess, initialData }) {
         body: JSON.stringify(form),
       });
       const data = await res.json();
-      if (data.success) { setMsg({ type: "success", text: `✅ "${data.attraction.title}" added!` }); onSuccess?.(); }
+      if (data.success) { setMsg({ type: "success", text: `✅ "${data.attraction.title}" added!` }); onSuccess?.(data.attraction); }
       else setMsg({ type: "error", text: data.error });
     } catch { setMsg({ type: "error", text: "Network error" }); }
     finally { setLoading(false); }
@@ -439,7 +439,14 @@ export default function AdminDashboardPage() {
               <h2 className="font-display text-2xl font-bold text-obsidian-800 mb-6 beadwork-border pb-4">
                 {duplicateData ? "Duplicate Attraction" : "Add New Attraction"}
               </h2>
-              <AddAttractionForm onSuccess={() => { setDuplicateData(null); fetchAttractions(); }} initialData={duplicateData} />
+              <AddAttractionForm onSuccess={(newAttraction) => { 
+                setDuplicateData(null); 
+                fetchAttractions(); 
+                if (newAttraction) {
+                  setSelectedAttraction(newAttraction);
+                  setActiveTab("media-manager");
+                }
+              }} initialData={duplicateData} />
             </div>
           </div>
         )}
