@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import mongoose from "mongoose";
 import { Booking, Attraction } from "@/lib/db/models";
 import { auth } from "@/lib/auth";
+import { initiateStkPush } from "@/lib/paymentIntegration/mpesa";
 
 async function connectDB() {
   if (mongoose.connection.readyState === 0) {
@@ -63,11 +64,45 @@ export async function POST(request) {
       paymentStatus: "Pending",
     });
 
+    // Trigger Safaricom Daraja M-Pesa STK Push
+    try {
+      const stkResponse = await initiateStkPush({
+        amount: totalAmount,
+        phone: mpesaPhone,
+        reference: booking.confirmationCode,
+        description: attraction.title,
+      });
+      
+      // Save CheckoutRequestID as tracking ID to match callbacks
+      booking.mpesaTrackingId = stkResponse.CheckoutRequestID;
+    } catch (stkErr) {
+      console.error("[M-Pesa STK Push Error]", stkErr.message);
+      // We will save the booking with Pending status so they can retry payment later,
+      // but let the response communicate that the initial STK push failed.
+      booking.paymentStatus = "Pending";
+      await booking.save();
+
+      return NextResponse.json(
+        {
+          success: false,
+          error: `Booking created, but M-Pesa STK Push failed: ${stkErr.message}. Please check your phone number and try again.`,
+          booking: {
+            ...booking.toObject(),
+            confirmationCode: booking.confirmationCode,
+            totalAmount,
+            currency: "KES",
+          },
+        },
+        { status: 400 }
+      );
+    }
+
     await booking.save();
 
     return NextResponse.json(
       {
         success: true,
+        message: "Booking created. M-Pesa STK Push sent successfully to your phone.",
         booking: {
           ...booking.toObject(),
           confirmationCode: booking.confirmationCode,
