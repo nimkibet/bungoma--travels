@@ -119,7 +119,9 @@ const nextConfig = {
       },
     ];
   },
-  serverExternalPackages: ["mongoose", "handlebars", "handlebars-loader", "node-mailjet"],
+  experimental: {
+    serverComponentsExternalPackages: ["mongoose", "handlebars", "handlebars-loader", "node-mailjet"],
+  },
 };
 
 export default nextConfig;
