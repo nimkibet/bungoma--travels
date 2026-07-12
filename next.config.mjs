@@ -3,7 +3,7 @@ const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com;
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/;
-    img-src 'self' blob: data: https://images.unsplash.com/ https://images.pexels.com/ https://platform-lookaside.fbsbx.com/ https://res.cloudinary.com/ https://upload.wikimedia.org/;
+    img-src 'self' blob: data: https://images.unsplash.com/ https://images.pexels.com/ https://platform-lookaside.fbsbx.com/ https://res.cloudinary.com/ https://upload.wikimedia.org/ https://via.placeholder.com/;
     font-src 'self' https://fonts.gstatic.com/;
     object-src 'self';
     frame-src 'self' https://www.openstreetmap.org/ https://js.stripe.com;
@@ -81,6 +81,11 @@ const nextConfig = {
         protocol: "http",
         hostname: "localhost",
         port: "3000",
+      },
+      {
+        protocol: "https",
+        hostname: "via.placeholder.com",
+        port: "",
       },
     ],
   },

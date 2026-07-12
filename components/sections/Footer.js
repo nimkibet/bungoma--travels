@@ -100,7 +100,7 @@ export async function Footer() {
           <div className="flex gap-6 text-xs text-white/40">
             <Link href="/privacy-policy" className="hover:text-white/70 transition-colors">Privacy Policy</Link>
             <Link href="/terms-of-service" className="hover:text-white/70 transition-colors">Terms of Service</Link>
-            <Link href="/(pages)/dashboard/admin" className="hover:text-savanna-400 transition-colors">Admin</Link>
+            <Link href="/dashboard/admin" className="hover:text-savanna-400 transition-colors">Admin</Link>
           </div>
         </div>
       </div>
