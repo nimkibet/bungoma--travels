@@ -57,19 +57,22 @@ export function SideBar({ isLoggedIn, sideBarLinksUser }) {
           <li>
             <SheetClose asChild>
               <Button className={"h-auto gap-2 p-0"} variant="link" asChild>
-                <Link href={routes.flights.path}>
-                  <Image src={plane} alt="plane_icon" width={20} />
-                  <span>{routes.flights.title}</span>
-                </Link>
-              </Button>
-            </SheetClose>
-          </li>
-          <li>
-            <SheetClose asChild>
-              <Button className={"h-auto gap-2 p-0"} variant="link" asChild>
-                <Link href={routes.hotels.path}>
-                  <Image src={hotel} alt="hotel_icon" width={20} />
-                  <span>{routes.hotels.title}</span>
+                <Link href={routes.attractions.path}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="12" cy="12" r="10" />
+                    <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+                  </svg>
+                  <span>{routes.attractions.title}</span>
                 </Link>
               </Button>
             </SheetClose>

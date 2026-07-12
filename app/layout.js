@@ -1,5 +1,4 @@
-import { Montserrat } from "next/font/google";
-import localFont from "next/font/local";
+import { Playfair_Display, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 
 import NextTopLoader from "nextjs-toploader";
@@ -7,63 +6,58 @@ import { Toaster } from "@/components/ui/sonner";
 import { StoreProvider } from "@/app/StoreProvider";
 import { SessionProvider } from "next-auth/react";
 import mongoose from "mongoose";
-
 import dynamic from "next/dynamic";
-
-import openGraph from "./opengraph-image.jpg";
 import MaintenancePage from "./MaintenancePage";
 import { MaintenanceNotice } from "./MaintenanceNotice";
 import SetNecessaryCookies from "./SetNecessaryCookies";
 import { getOneDoc } from "@/lib/db/getOperationDB";
 import { headers } from "next/headers";
-import { Analytics } from "@vercel/analytics/next";
 
-const monse = Montserrat({
+const playfair = Playfair_Display({
   subsets: ["latin"],
-  variable: "--font-monserrat",
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  variable: "--font-playfair",
+  weight: ["400", "600", "700", "900"],
+  style: ["normal", "italic"],
 });
-const tradegothic = localFont({
-  src: "../public/fonts/gothic_extended.otf",
-  variable: "--font-tradegothic",
-  display: "swap",
+
+const jakarta = Plus_Jakarta_Sans({
+  subsets: ["latin"],
+  variable: "--font-jakarta",
+  weight: ["300", "400", "500", "600", "700", "800"],
 });
 
 export const metadata = {
-  title: "Golob Travel Agency",
+  title: {
+    default: "Bungoma Tours | Discover Western Kenya's Hidden Gems",
+    template: "%s | Bungoma Tours",
+  },
   description:
-    "Golob Travel Agency is a travel agency that provides top-notch travel services.",
+    "Explore Mount Elgon, Nabuyole Falls, Kakamega Forest and the best attractions in Western Kenya. Premium guided tours with authentic local experiences.",
   keywords: [
-    "travel",
-    "agency",
-    "golob",
-    "travel agency",
-    "golob travel agency",
-    "nextjs",
-    "react",
-    "javascript",
-    "tailwind css",
-    "next auth",
-    "mongodb",
-    "node js",
-    "redux",
-    "web app",
+    "Bungoma Tours",
+    "Kenya tourism",
+    "Western Kenya",
+    "Mount Elgon",
+    "Nabuyole Falls",
+    "Kakamega Forest",
+    "safari Kenya",
+    "Maasai Mara",
+    "Kenya attractions",
+    "African travel",
   ],
-  metadataBase: new URL("https://golob-travel-agency.vercel.app"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000"),
   openGraph: {
-    title: "Golob Travel Agency",
+    title: "Bungoma Tours | Discover Western Kenya's Hidden Gems",
     description:
-      "Golob Travel Agency is a travel agency that provides top-notch travel services (fake, personal project).",
-    siteName: "Golob Travel Agency",
-    images: [
-      {
-        url: openGraph.src,
-        width: openGraph.width,
-        height: openGraph.height,
-      },
-    ],
+      "Authentic Kenyan travel experiences — from volcanic peaks to cascading waterfalls and ancient forests.",
+    siteName: "Bungoma Tours",
     locale: "en_US",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Bungoma Tours",
+    description: "Discover Western Kenya's most breathtaking attractions.",
   },
 };
 
@@ -72,37 +66,25 @@ export default async function RootLayout({ children }) {
     try {
       await mongoose.connect(process.env.MONGODB_URI);
     } catch (e) {
-      console.log(e);
+      console.error("[MongoDB] Connection error:", e.message);
     }
   }
 
-  const Notice = dynamic(
-    () => import("@/app/_notice").then((mod) => mod.Notice),
-    {
-      ssr: false,
-    },
-  );
 
-  const websiteConfig = await getOneDoc(
-    "WebsiteConfig",
-    {},
-    ["websiteConfig"],
-    60,
-  );
 
+  const websiteConfig = await getOneDoc("WebsiteConfig", {}, ["websiteConfig"], 60);
   const maintenanceMode = websiteConfig?.maintenanceMode ?? { enabled: false };
-
   const alloweRoutesWhileMaintenance = maintenanceMode?.allowlistedRoutes ?? [];
   const currentPathname = headers().get("x-pathname");
 
   return (
-    <html lang="en" className={`${tradegothic.variable} ${monse.variable}`}>
-      <body className={monse.className}>
+    <html lang="en" className={`${playfair.variable} ${jakarta.variable}`}>
+      <body className={jakarta.className}>
         {maintenanceMode.enabled === true &&
         !alloweRoutesWhileMaintenance.some(
           (path) =>
             path === currentPathname ||
-            (path !== "/" && currentPathname.startsWith(path)),
+            (path !== "/" && currentPathname.startsWith(path))
         ) ? (
           <MaintenancePage
             message={maintenanceMode.message}
@@ -113,17 +95,15 @@ export default async function RootLayout({ children }) {
           <StoreProvider>
             <SessionProvider>
               <div className="mx-auto max-w-[1440px]">
-                <Notice />
                 <MaintenanceNotice maintenanceMode={maintenanceMode} />
                 {children}
               </div>
             </SessionProvider>
           </StoreProvider>
         )}
-        <NextTopLoader showSpinner={false} color="hsl(159, 44%, 69%)" />
+        <NextTopLoader showSpinner={false} color="#dc440f" height={3} />
         <Toaster richColors closeButton expand position="top-right" />
         <SetNecessaryCookies />
-        <Analytics />
       </body>
     </html>
   );

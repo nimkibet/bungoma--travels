@@ -1,175 +1,162 @@
-import { TabsContent, TabsList, TabsTrigger, Tabs } from "@/components/ui/tabs";
-
 import Image from "next/image";
-
-import { auth } from "@/lib/auth";
-import { getAllFlightBookings } from "@/lib/services/flights";
 import Link from "next/link";
-import FlightBookingDetailsCardSmall from "./ui/FlightBookingDetailsCardSmall";
-import { getOneDoc } from "@/lib/db/getOperationDB";
-import { strToObjectId } from "@/lib/db/utilsDB";
-import { getAllHotelBookings } from "@/lib/services/hotels";
-import HotelBookingDetailsCardSmall from "./ui/HotelBookingDetailsCardSmall";
+import mongoose from "mongoose";
+import { auth } from "@/lib/auth";
+import { Booking } from "@/lib/db/models";
+
+async function getAttractionBookings(userId) {
+  if (mongoose.connection.readyState === 0) {
+    await mongoose.connect(process.env.MONGODB_URI);
+  }
+  // Ensure Attraction model is registered
+  require("@/lib/db/models");
+  
+  return Booking.find({ user: userId })
+    .populate("attraction")
+    .sort({ createdAt: -1 })
+    .lean();
+}
+
 export async function TicketsOrBookings() {
   const session = await auth();
-
   const userId = session?.user?.id;
-
-  const flightBookings = await getAllFlightBookings(userId);
-
-  const hotelBookings = await getAllHotelBookings(userId);
+  
+  const bookings = userId ? await getAttractionBookings(userId) : [];
 
   return (
     <>
-      <div className="flex items-center justify-between">
-        <h1 className="mb-[16px] text-[2rem] font-bold">Tickets/Bookings</h1>
-        <select className="h-min bg-transparent p-0 text-[0.875rem] font-semibold">
-          <option value="all">All</option>
-          <option value="upcoming">Upcoming</option>
-          <option value="past">Past</option>
-        </select>
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-[2rem] font-bold font-display text-obsidian-800">Your Bookings</h1>
+        <div className="bg-sand-100 px-3 py-1.5 rounded-full text-xs font-semibold text-obsidian-600">
+          {bookings.length} Booking{bookings.length !== 1 ? "s" : ""}
+        </div>
       </div>
-      <div className="mb-[16px] flex items-center gap-[24px] rounded-[12px]">
-        <Tabs defaultValue="flights" className="w-full">
-          <TabsList className="mb-4 flex h-auto flex-col justify-start bg-white p-0 shadow-md xsm:flex-row">
-            <TabsTrigger
-              value="flights"
-              className="h-[48px] w-full grow gap-2 py-5 font-bold md:h-[60px]"
-            >
-              <Image
-                width={24}
-                height={24}
-                src={"/icons/airplane-filled.svg"}
-                alt="airplane_icon"
-              />
-              <span>Flights</span>
-            </TabsTrigger>
-            <TabsTrigger
-              value="stays"
-              className="h-[48px] w-full grow gap-2 py-5 font-bold md:h-[60px]"
-            >
-              <Image
-                width={24}
-                height={24}
-                src={"/icons/bed-filled.svg"}
-                alt="airplane_icon"
-              />
-              <span>Stays</span>
-            </TabsTrigger>
-          </TabsList>
-          <TabsContent className="flex flex-col gap-3" value="flights">
-            {!flightBookings.length && (
-              <NoBookingFound
-                message={
-                  <>
-                    You don&apos;t have any flight booking yet. Go to{" "}
-                    <Link href="/flights">flights</Link> to book a flight
-                  </>
-                }
-              />
-            )}
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {flightBookings.map(async (booking) => {
-                const flightData = await getOneDoc(
-                  "FlightItinerary",
-                  {
-                    _id: strToObjectId(booking.flightItineraryId),
-                  },
-                  ["flight"],
-                );
-                const bookingDetails = {
-                  key: booking._id,
-                  bookingStatus: booking.ticketStatus,
-                  paymentStatus: booking.paymentStatus,
-                  cancellationPolicy:
-                    flightData.carrierInCharge.airlinePolicy.cancellationPolicy,
-                  bookedAt: booking.createdAt,
-                  itineraryFlightNumber: flightData.flightCode,
-                  pnrCode: booking.pnrCode,
-                  passengers: booking.passengers.map((p) => {
-                    const seatDetails = booking.selectedSeats.find(
-                      (s) => s.passengerId === p._id,
-                    );
-                    return {
-                      key: p._id,
-                      fullName: p.firstName + " " + p.lastName,
-                      passengerType: p.passengerType,
-                      seatNumber: seatDetails.seatId.seatNumber,
-                      seatClass: seatDetails.seatId.class,
-                    };
-                  }),
-                  segments: flightData.segmentIds.map((s) => {
-                    return {
-                      key: s._id,
-                      flightNumber: s.flightNumber,
-                      airplaneModelName: s.airplaneId.model,
-                      airlineName: s.airlineId.name,
-                      airlineIataCode: s.airlineId.iataCode,
-                      departureDateTime: s.from.scheduledDeparture,
-                      departureAirportIataCode: s.from.airport.iataCode,
-                      departureAirportName: s.from.airport.name,
-                      arrivalDateTime: s.to.scheduledArrival,
-                      arrivalAirportIataCode: s.to.airport.iataCode,
-                      arrivalAirportName: s.to.airport.name,
-                      flightDurationMinutes: s.durationMinutes,
-                      gate: s.from.gate,
-                      terminal: s.from.terminal,
-                    };
-                  }),
-                };
-                return (
-                  <FlightBookingDetailsCardSmall
-                    key={bookingDetails.key}
-                    bookingDetails={bookingDetails}
-                    className={"mx-auto"}
-                  />
-                );
-              })}
-            </div>
-          </TabsContent>
-          <TabsContent value="stays">
-            {hotelBookings.length === 0 && (
-              <NoBookingFound
-                message={
-                  <>
-                    You don&apos;t have any hotel booking yet. Go to{" "}
-                    <Link href="/hotels">hotels</Link> to book a room
-                  </>
-                }
-              />
-            )}
+      <div className="space-y-4">
+        {bookings.length === 0 ? (
+          <div className="flex flex-col items-center justify-center gap-4 rounded-2xl bg-white border border-sand-200 p-10 text-center shadow-card-terracotta">
+            <div className="text-5xl">🌍</div>
+            <div className="text-xl font-bold text-obsidian-800">No bookings found</div>
+            <p className="max-w-md text-sm text-muted-foreground">
+              You haven&apos;t booked any attractions yet. Start exploring Bungoma County and Western Kenya today!
+            </p>
+            <Link href="/attractions" className="btn-terracotta text-sm">
+              Browse Attractions
+            </Link>
+          </div>
+        ) : (
+          <div className="grid gap-6 sm:grid-cols-1 md:grid-cols-2">
+            {bookings.map((booking) => {
+              const attraction = booking.attraction || {};
+              const img = attraction.images?.[0] || "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=800&q=75";
+              const totalGuests = (booking.numberOfGuests?.citizens || 0) + 
+                                  (booking.numberOfGuests?.residents || 0) + 
+                                  (booking.numberOfGuests?.foreigners || 0);
+              
+              const statusColors = {
+                Pending: "bg-yellow-100 text-yellow-800 border-yellow-200",
+                Paid: "bg-green-100 text-green-800 border-green-200",
+                Failed: "bg-red-100 text-red-800 border-red-200",
+                Refunded: "bg-blue-100 text-blue-800 border-blue-200",
+              };
 
-            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {hotelBookings.map(async (booking) => {
-                const hotelData = await getOneDoc(
-                  "Hotel",
-                  {
-                    _id: strToObjectId(booking.hotelId),
-                  },
-                  ["hotel"],
-                );
-                return (
-                  <HotelBookingDetailsCardSmall
-                    key={booking._id}
-                    hotelDetails={hotelData}
-                    bookingDetails={booking}
-                    className={"mx-auto"}
-                  />
-                );
-              })}
-            </div>
-          </TabsContent>
-        </Tabs>
+              return (
+                <div 
+                  key={booking._id.toString()} 
+                  className="bg-white rounded-2xl border border-sand-200 overflow-hidden shadow-card-terracotta hover:shadow-card-hover transition-all duration-300 flex flex-col"
+                  id={`booking-card-${booking.confirmationCode}`}
+                >
+                  {/* Card Image Header */}
+                  <div className="relative h-40">
+                    <Image 
+                      src={img} 
+                      alt={attraction.title || "Attraction"} 
+                      fill 
+                      sizes="(max-width: 768px) 100vw, 50vw"
+                      className="object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                    <div className="absolute top-3 left-3">
+                      <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${statusColors[booking.paymentStatus] || "bg-sand-100"}`}>
+                        {booking.paymentStatus}
+                      </span>
+                    </div>
+                    
+                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                      <p className="text-xs text-savanna-300 font-semibold tracking-wider uppercase">
+                        {attraction.category || "Tour"}
+                      </p>
+                      <h3 className="font-display text-lg font-bold truncate leading-tight mt-0.5">
+                        {attraction.title || "Unknown Attraction"}
+                      </h3>
+                    </div>
+                  </div>
+
+                  {/* Card Content */}
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
+                    <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div>
+                        <span className="text-xs text-muted-foreground block font-medium uppercase tracking-wider">Date of Visit</span>
+                        <span className="font-semibold text-obsidian-800">
+                          {booking.travelDate ? new Date(booking.travelDate).toLocaleDateString("en-KE", { dateStyle: "medium" }) : "N/A"}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground block font-medium uppercase tracking-wider">Guests</span>
+                        <span className="font-semibold text-obsidian-800">
+                          {totalGuests} Guest{totalGuests !== 1 ? "s" : ""}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground block font-medium uppercase tracking-wider">Confirmation</span>
+                        <span className="font-semibold font-mono text-xs text-terracotta-600 bg-terracotta-50 px-2 py-0.5 rounded border border-terracotta-100">
+                          {booking.confirmationCode}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground block font-medium uppercase tracking-wider">Total Amount</span>
+                        <span className="font-bold text-safari-700">
+                          KES {booking.totalAmount?.toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Guest Breakdown */}
+                    <div className="text-xs bg-sand-50 rounded-xl p-3 border border-sand-100 space-y-1">
+                      <p className="text-muted-foreground font-semibold uppercase tracking-wider mb-1" style={{fontSize: '9px'}}>Guest Tiers</p>
+                      {booking.numberOfGuests?.citizens > 0 && (
+                        <div className="flex justify-between">
+                          <span>Kenyan Citizen(s):</span>
+                          <span className="font-bold">{booking.numberOfGuests.citizens}</span>
+                        </div>
+                      )}
+                      {booking.numberOfGuests?.residents > 0 && (
+                        <div className="flex justify-between">
+                          <span>EA Resident(s):</span>
+                          <span className="font-bold">{booking.numberOfGuests.residents}</span>
+                        </div>
+                      )}
+                      {booking.numberOfGuests?.foreigners > 0 && (
+                        <div className="flex justify-between">
+                          <span>Foreign Visitor(s):</span>
+                          <span className="font-bold">{booking.numberOfGuests.foreigners}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {booking.mpesaPhone && (
+                      <div className="flex items-center gap-1.5 text-xs text-muted-foreground pt-2 border-t border-sand-100">
+                        <span className="text-safari-600">📱</span>
+                        <span>Paid/Requested via M-PESA: <strong>{booking.mpesaPhone}</strong></span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
       </div>
     </>
-  );
-}
-function NoBookingFound({ message }) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-4 rounded-xl bg-gray-50 p-6 text-gray-700 shadow-inner">
-      <div className="text-2xl font-semibold">No Bookings yet</div>
-      <div className="max-w-md text-center text-base">{message}</div>
-    </div>
   );
 }

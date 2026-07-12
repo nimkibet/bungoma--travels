@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Mount Elgon National Park",
+    "slug": "mount-elgon",
+    "tags": [
+      "mountain",
+      "western-kenya",
+      "bungoma"
+    ],
+    "cloudinaryUrls": [
+      "https://res.cloudinary.com/rslkpwjo/image/upload/v1783802181/bungoma_tours_assets/mount-elgon_2.jpg"
+    ]
+  },
+  {
+    "name": "Nabuyole Falls",
+    "slug": "nabuyole-falls",
+    "tags": [
+      "waterfall",
+      "bungoma",
+      "western-kenya"
+    ],
+    "cloudinaryUrls": [
+      "https://res.cloudinary.com/rslkpwjo/image/upload/v1783802182/bungoma_tours_assets/nabuyole-falls_1.jpg",
+      "https://res.cloudinary.com/rslkpwjo/image/upload/v1783802183/bungoma_tours_assets/nabuyole-falls_2.jpg"
+    ]
+  },
+  {
+    "name": "Maasai Mara National Reserve",
+    "slug": "maasai-mara",
+    "tags": [
+      "wildlife",
+      "safari",
+      "rift-valley"
+    ],
+    "cloudinaryUrls": [
+      "https://res.cloudinary.com/rslkpwjo/image/upload/v1783802184/bungoma_tours_assets/maasai-mara_1.jpg",
+      "https://res.cloudinary.com/rslkpwjo/image/upload/v1783802186/bungoma_tours_assets/maasai-mara_2.jpg"
+    ]
+  },
+  {
+    "name": "Diani Beach",
+    "slug": "diani-beach",
+    "tags": [
+      "beach",
+      "coastal",
+      "mombasa"
+    ],
+    "cloudinaryUrls": [
+      "https://res.cloudinary.com/rslkpwjo/image/upload/v1783802187/bungoma_tours_assets/diani-beach_1.jpg",
+      "https://res.cloudinary.com/rslkpwjo/image/upload/v1783802188/bungoma_tours_assets/diani-beach_2.jpg"
+    ]
+  },
+  {
+    "name": "Kakamega Rainforest",
+    "slug": "kakamega-rainforest",
+    "tags": [
+      "forest",
+      "western-kenya",
+      "nature"
+    ],
+    "cloudinaryUrls": [
+      "https://res.cloudinary.com/rslkpwjo/image/upload/v1783802188/bungoma_tours_assets/kakamega-rainforest_1.jpg",
+      "https://res.cloudinary.com/rslkpwjo/image/upload/v1783802190/bungoma_tours_assets/kakamega-rainforest_2.jpg"
+    ]
+  },
+  {
+    "name": "Lake Victoria",
+    "slug": "lake-victoria",
+    "tags": [
+      "lake",
+      "western-kenya",
+      "fishing"
+    ],
+    "cloudinaryUrls": [
+      "https://res.cloudinary.com/rslkpwjo/image/upload/v1783802191/bungoma_tours_assets/lake-victoria_1.jpg",
+      "https://res.cloudinary.com/rslkpwjo/image/upload/v1783802192/bungoma_tours_assets/lake-victoria_2.jpg"
+    ]
+  }
+]

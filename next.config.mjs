@@ -2,9 +2,9 @@ import { join, resolve } from "path";
 const cspHeader = `
     default-src 'self';
     script-src 'self' 'unsafe-eval' 'unsafe-inline' https://js.stripe.com;
-    style-src 'self' 'unsafe-inline';
-    img-src 'self' blob: data: https://images.unsplash.com/ https://images.pexels.com/ https://platform-lookaside.fbsbx.com/;
-    font-src 'self';
+    style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/;
+    img-src 'self' blob: data: https://images.unsplash.com/ https://images.pexels.com/ https://platform-lookaside.fbsbx.com/ https://res.cloudinary.com/ https://upload.wikimedia.org/;
+    font-src 'self' https://fonts.gstatic.com/;
     object-src 'self';
     frame-src 'self' https://www.openstreetmap.org/ https://js.stripe.com;
     base-uri 'self';
@@ -67,11 +67,35 @@ const nextConfig = {
         hostname: "www.airplane-pictures.net",
       },
       {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+      },
+      {
+        protocol: "https",
+        hostname: "upload.wikimedia.org",
+        port: "",
+      },
+      {
         protocol: "http",
         hostname: "localhost",
         port: "3000",
       },
     ],
+  },
+  async redirects() {
+    return [
+      {
+        source: "/login",
+        destination: "/user/login",
+        permanent: true,
+      },
+      {
+        source: "/signup",
+        destination: "/user/signup",
+        permanent: true,
+      },
+    ];
   },
   async headers() {
     return [

@@ -3,21 +3,9 @@
     "title": "Home",
     "path": "/"
   },
-  "flights": {
-    "title": "Find Flights",
-    "path": "/flights"
-  },
-  "flights-search": {
-    "title": "Flights Search",
-    "path": "/flights/search"
-  },
-  "hotels": {
-    "title": "Find Hotels",
-    "path": "/hotels"
-  },
-  "hotels-search": {
-    "title": "Hotels Search",
-    "path": "/hotels/search"
+  "attractions": {
+    "title": "Explore Attractions",
+    "path": "/attractions"
   },
   "privacy-policy": {
     "title": "Privacy Policy",

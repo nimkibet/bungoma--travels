@@ -1,77 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;0,900;1,400;1,700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 0 0% 98%;
-    --foreground: 222.2 84% 4.9%;
+    /* ── Bungoma Tours: Kenyan African Palette ── */
+    /* Primary: Terracotta (earthy Kenyan clay) */
+    --primary: 13 84% 47%;
+    --primary-foreground: 0 0% 100%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-
-    --primary: 159 44% 69%;
-    --primary-foreground: 120 33% 10%;
-
-    --secondary: 120 33% 10%;
+    /* Secondary: Obsidian (deep volcanic rock) */
+    --secondary: 0 0% 10%;
     --secondary-foreground: 0 0% 100%;
 
-    --tertiary: 6 93% 71%;
-    --tertiary-foreground: 0 0% 100%;
+    /* Tertiary: Savanna Gold (warm afternoon light) */
+    --tertiary: 36 97% 50%;
+    --tertiary-foreground: 0 0% 10%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Backgrounds */
+    --background: 36 20% 97%;
+    --foreground: 0 0% 8%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Cards */
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 8%;
 
+    /* Popover */
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 8%;
+
+    /* Muted */
+    --muted: 36 15% 92%;
+    --muted-foreground: 0 0% 42%;
+
+    /* Accent: Safari Green */
+    --accent: 142 70% 42%;
+    --accent-foreground: 0 0% 100%;
+
+    /* Utility */
     --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive-foreground: 0 0% 100%;
 
-    --disabled: 270 2% 82%;
-    --disabled-foreground: 276 2% 56%;
+    --disabled: 36 10% 82%;
+    --disabled-foreground: 36 5% 56%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 36 20% 86%;
+    --input: 36 20% 90%;
+    --ring: 13 84% 47%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
-    --foreground: 210 40% 98%;
+    --background: 0 0% 5%;
+    --foreground: 36 15% 95%;
 
-    --card: 222.2 84% 4.9%;
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 8%;
+    --card-foreground: 36 15% 95%;
 
-    --popover: 222.2 84% 4.9%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 8%;
+    --popover-foreground: 36 15% 95%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 13 84% 52%;
+    --primary-foreground: 0 0% 100%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 36 15% 15%;
+    --secondary-foreground: 36 15% 95%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 0 0% 12%;
+    --muted-foreground: 36 10% 60%;
 
-    --accent: 6 93% 71%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 142 55% 45%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 62.8% 40%;
+    --destructive-foreground: 0 0% 100%;
 
-    --disabled: 270 2% 82%;
-    --disabled-foreground: 276 2% 56%;
+    --disabled: 0 0% 25%;
+    --disabled-foreground: 0 0% 45%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 0 0% 14%;
+    --input: 0 0% 14%;
+    --ring: 13 84% 52%;
   }
 }
 
@@ -80,8 +92,20 @@
     @apply border-border;
   }
 
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     @apply bg-background text-foreground;
+    font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Playfair Display', Georgia, serif;
+    @apply font-bold tracking-tight;
   }
 
   section {
@@ -89,20 +113,143 @@
   }
 }
 
+@layer components {
+  /* ── Bungoma Button variants ── */
+  .btn-terracotta {
+    @apply bg-terracotta-600 text-white font-semibold px-6 py-3 rounded-xl
+           transition-all duration-200 ease-out cursor-pointer
+           hover:bg-terracotta-700 hover:shadow-card-terracotta hover:-translate-y-0.5
+           active:translate-y-0 active:scale-[0.98]
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-terracotta-500;
+  }
+
+  .btn-savanna {
+    @apply bg-savanna-500 text-obsidian-900 font-semibold px-6 py-3 rounded-xl
+           transition-all duration-200 ease-out cursor-pointer
+           hover:bg-savanna-600 hover:-translate-y-0.5
+           active:translate-y-0;
+  }
+
+  .btn-ghost-light {
+    @apply border border-white/30 text-white font-semibold px-6 py-3 rounded-xl
+           backdrop-blur-sm bg-white/10 transition-all duration-200 cursor-pointer
+           hover:bg-white/20 hover:border-white/50;
+  }
+
+  /* ── Attraction cards ── */
+  .attraction-card {
+    @apply relative overflow-hidden rounded-2xl bg-white
+           shadow-card-terracotta transition-all duration-300
+           hover:shadow-card-hover hover:-translate-y-1.5
+           cursor-pointer;
+  }
+
+  .attraction-card::before {
+    content: '';
+    @apply absolute inset-0 bg-beadwork opacity-0 transition-opacity duration-300 z-0;
+  }
+
+  .attraction-card:hover::before {
+    @apply opacity-100;
+  }
+
+  /* ── Beadwork border ── */
+  .beadwork-border {
+    position: relative;
+  }
+
+  .beadwork-border::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: repeating-linear-gradient(
+      90deg,
+      #dc440f 0px,
+      #dc440f 8px,
+      #f59009 8px,
+      #f59009 16px,
+      #22c55e 16px,
+      #22c55e 24px,
+      #1a1a1a 24px,
+      #1a1a1a 32px
+    );
+  }
+
+  /* ── Pricing badge ── */
+  .price-badge-citizen {
+    @apply bg-safari-700 text-white text-xs font-bold px-2.5 py-1 rounded-full;
+  }
+  .price-badge-resident {
+    @apply bg-savanna-500 text-obsidian-900 text-xs font-bold px-2.5 py-1 rounded-full;
+  }
+  .price-badge-foreigner {
+    @apply bg-terracotta-600 text-white text-xs font-bold px-2.5 py-1 rounded-full;
+  }
+
+  /* ── Glass card ── */
+  .glass-card {
+    @apply backdrop-blur-md bg-white/10 border border-white/20 rounded-2xl;
+  }
+
+  /* ── Section title with underline ── */
+  .section-title {
+    @apply font-display text-3xl md:text-4xl lg:text-5xl font-bold text-obsidian-800;
+  }
+
+  .section-title-underline {
+    @apply inline-block relative;
+  }
+
+  .section-title-underline::after {
+    content: '';
+    @apply absolute -bottom-2 left-0 w-2/3 h-1 bg-terracotta-600 rounded-full;
+  }
+
+  /* ── Loading shimmer ── */
+  .skeleton {
+    @apply bg-gradient-to-r from-sand-100 via-sand-200 to-sand-100 bg-[length:200%_100%] animate-shimmer rounded-lg;
+  }
+}
+
 @layer utilities {
   .active {
-    @apply border-b-2 border-b-primary;
+    @apply border-b-2 border-b-terracotta-600;
   }
+
+  .bungoma-scrollbar {
+    scrollbar-color: #dc440f #f5f0ea;
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+
   .golobe-scrollbar {
     scrollbar-color: hsl(var(--primary)) hsl(var(--secondary));
     scrollbar-width: thin;
     scrollbar-gutter: none;
   }
-  .scrollbar-hide {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+
+  .text-gradient-terracotta {
+    background: linear-gradient(135deg, #dc440f, #f59009);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
-  .scrollbar-hide::-webkit-scrollbar {
-    display: none;
+
+  .text-gradient-safari {
+    background: linear-gradient(135deg, #15803d, #22c55e);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 }
