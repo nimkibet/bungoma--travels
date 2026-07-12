@@ -2,6 +2,7 @@
   "name": "bungoma-tours",
   "version": "1.0.0",
   "private": true,
+  "type": "module",
   "browserslist": [
     "defaults"
   ],
@@ -12,10 +13,10 @@
     "dev": "cross-env TZ=UTC next dev",
     "build": "next build",
     "start": "next start",
-    "setup": "node setup.js",
-    "seed:assets": "node seed-assets.js",
-    "seed:db": "node seed-db.js",
-    "seed": "node seed-assets.js && node seed-db.js",
+    "setup": "node setup.cjs",
+    "seed:assets": "node seed-assets.cjs",
+    "seed:db": "node seed-db.cjs",
+    "seed": "node seed-assets.cjs && node seed-db.cjs",
     "lint": "next lint",
     "test": "vitest --testNamePattern Testing"
   },

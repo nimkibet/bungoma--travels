@@ -1,8 +1,5 @@
 import { NextResponse } from "next/server";
 
-if (typeof globalThis.__dirname === "undefined") {
-  globalThis.__dirname = "/";
-}
 
 export default async function middleware(req) {
   const response = NextResponse.next();
