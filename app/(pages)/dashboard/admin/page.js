@@ -22,8 +22,8 @@ function StatCard({ icon, label, value, color = "terracotta" }) {
 }
 
 // ── Add Attraction Form ──
-function AddAttractionForm({ onSuccess }) {
-  const [form, setForm] = useState({
+function AddAttractionForm({ onSuccess, initialData }) {
+  const [form, setForm] = useState(initialData || {
     title: "", location: { county: "", region: "" }, description: "", shortDescription: "",
     category: "Nature",
     entryFee: { citizen: 0, resident: 0, foreigner: 0 },
@@ -32,6 +32,10 @@ function AddAttractionForm({ onSuccess }) {
   });
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState(null);
+
+  useEffect(() => {
+    if (initialData) setForm(initialData);
+  }, [initialData]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -249,6 +253,7 @@ export default function AdminDashboardPage() {
   const [selectedAttraction, setSelectedAttraction] = useState(null);
   const [editSeo, setEditSeo] = useState(null);
   const [seoSaving, setSeoSaving] = useState(false);
+  const [duplicateData, setDuplicateData] = useState(null);
 
   const fetchAttractions = useCallback(async () => {
     setLoading(true);
@@ -294,6 +299,20 @@ export default function AdminDashboardPage() {
     fetchAttractions();
   }
 
+  function handleDuplicate(attraction) {
+    setDuplicateData({
+      title: `${attraction.title} (Copy)`,
+      location: attraction.location || { county: "", region: "" },
+      description: attraction.description || "",
+      shortDescription: attraction.shortDescription || "",
+      category: attraction.category || "Nature",
+      entryFee: attraction.entryFee || { citizen: 0, resident: 0, foreigner: 0 },
+      seo: attraction.seo || { metaTitle: "", metaDescription: "" },
+      featured: false,
+    });
+    setActiveTab("add-attraction");
+  }
+
   const tabs = ["overview", "add-attraction", "media-manager", "seo-manager"];
 
   return (
@@ -320,7 +339,12 @@ export default function AdminDashboardPage() {
               <button
                 key={tab.id}
                 id={`admin-tab-${tab.id}`}
-                onClick={() => setActiveTab(tab.id)}
+                onClick={() => {
+                  setActiveTab(tab.id);
+                  if (tab.id === "add-attraction" && activeTab !== "add-attraction") {
+                    setDuplicateData(null); // Clear duplicate form if clicked directly
+                  }
+                }}
                 className={`px-5 py-3 text-sm font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer border-b-2 ${
                   activeTab === tab.id ? "border-terracotta-500 text-terracotta-300 bg-white/5" : "border-transparent text-white/60 hover:text-white/90"
                 }`}
@@ -386,6 +410,7 @@ export default function AdminDashboardPage() {
                           </td>
                           <td className="px-4 py-3">
                             <div className="flex gap-2">
+                              <button id={`duplicate-${a.slug}`} onClick={() => handleDuplicate(a)} className="text-xs bg-savanna-50 text-savanna-700 border border-savanna-200 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-savanna-100 transition-colors font-semibold">📋 Duplicate</button>
                               <button id={`manage-media-${a.slug}`} onClick={() => { setSelectedAttraction(a); setActiveTab("media-manager"); }} className="text-xs bg-terracotta-50 text-terracotta-700 border border-terracotta-200 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-terracotta-100 transition-colors font-semibold">📸 Media</button>
                               <button id={`edit-seo-${a.slug}`} onClick={() => { setEditSeo(a.seo || {}); setSelectedAttraction(a); setActiveTab("seo-manager"); }} className="text-xs bg-safari-50 text-safari-700 border border-safari-200 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-safari-100 transition-colors font-semibold">🔍 SEO</button>
                               <button id={`deactivate-${a.slug}`} onClick={() => deactivate(a.slug)} className="text-xs bg-red-50 text-red-600 border border-red-200 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-red-100 transition-colors font-semibold">🗑</button>
@@ -411,8 +436,10 @@ export default function AdminDashboardPage() {
         {activeTab === "add-attraction" && (
           <div className="max-w-3xl">
             <div className="bg-white rounded-2xl shadow-card-terracotta p-8">
-              <h2 className="font-display text-2xl font-bold text-obsidian-800 mb-6 beadwork-border pb-4">Add New Attraction</h2>
-              <AddAttractionForm onSuccess={fetchAttractions} />
+              <h2 className="font-display text-2xl font-bold text-obsidian-800 mb-6 beadwork-border pb-4">
+                {duplicateData ? "Duplicate Attraction" : "Add New Attraction"}
+              </h2>
+              <AddAttractionForm onSuccess={() => { setDuplicateData(null); fetchAttractions(); }} initialData={duplicateData} />
             </div>
           </div>
         )}
