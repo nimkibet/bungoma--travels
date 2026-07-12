@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 
@@ -13,8 +13,31 @@ export function BookingForm({ attractionSlug, entryFee, session }) {
     mpesaPhone: "",
   });
   const [loading, setLoading] = useState(false);
-  const [success, setSuccess] = useState(null);
+  const [success, setSuccess] = useState(null); // stores booking data
   const [error, setError] = useState(null);
+  const [paymentStatus, setPaymentStatus] = useState(null); // "Pending", "Paid", "Failed"
+
+  // Poll for payment status
+  useEffect(() => {
+    let intervalId;
+    if (success && paymentStatus === "Pending") {
+      intervalId = setInterval(async () => {
+        try {
+          const res = await fetch(`/api/bookings/${success._id}/status`);
+          const data = await res.json();
+          if (data.success && data.paymentStatus !== "Pending") {
+            setPaymentStatus(data.paymentStatus);
+            if (data.paymentStatus === "Failed") {
+              setError(`Payment failed or was cancelled. Reason: ${data.paymentReference}`);
+            }
+          }
+        } catch (err) {
+          console.error("Error polling payment status:", err);
+        }
+      }, 3000);
+    }
+    return () => clearInterval(intervalId);
+  }, [success, paymentStatus]);
 
   if (!session?.user) {
     return (
@@ -42,6 +65,7 @@ export function BookingForm({ attractionSlug, entryFee, session }) {
     }
     setLoading(true);
     setError(null);
+    setPaymentStatus(null);
     try {
       const res = await fetch("/api/bookings", {
         method: "POST",
@@ -60,6 +84,7 @@ export function BookingForm({ attractionSlug, entryFee, session }) {
       const data = await res.json();
       if (data.success) {
         setSuccess(data.booking);
+        setPaymentStatus("Pending");
       } else {
         setError(data.error);
       }
@@ -73,18 +98,39 @@ export function BookingForm({ attractionSlug, entryFee, session }) {
   if (success) {
     return (
       <div className="bg-safari-50 border border-safari-300 rounded-xl p-6 text-center">
-        <div className="text-4xl mb-3">🎉</div>
-        <h3 className="font-display text-xl font-bold text-safari-800 mb-2">Booking Confirmed!</h3>
-        <p className="text-safari-700 text-sm mb-2">Confirmation Code:</p>
-        <p className="font-bold text-lg text-safari-900 bg-white px-4 py-2 rounded-lg border border-safari-300 mb-4">
-          {success.confirmationCode}
-        </p>
-        <p className="text-safari-600 text-sm mb-4">
-          Total: <strong>KES {success.totalAmount?.toLocaleString()}</strong>
-        </p>
-        <p className="text-xs text-safari-600">
-          Pay via MPesa to complete your booking. An M-Pesa prompt will be sent to your phone shortly.
-        </p>
+        {paymentStatus === "Pending" && (
+          <div className="mb-4">
+            <div className="w-12 h-12 border-4 border-safari-200 border-t-safari-600 rounded-full animate-spin mx-auto mb-3" />
+            <h3 className="font-display text-xl font-bold text-safari-800 mb-2">Waiting for M-PESA...</h3>
+            <p className="text-safari-600 text-sm">Please check your phone and enter your PIN to complete the payment.</p>
+          </div>
+        )}
+        
+        {paymentStatus === "Paid" && (
+          <div className="mb-4 animate-in zoom-in duration-300">
+            <div className="text-5xl mb-3">✅</div>
+            <h3 className="font-display text-2xl font-bold text-green-700 mb-2">Payment Successful!</h3>
+            <p className="text-green-600 text-sm font-medium">Your booking is fully confirmed.</p>
+          </div>
+        )}
+
+        {paymentStatus === "Failed" && (
+          <div className="mb-4 animate-in zoom-in duration-300">
+            <div className="text-5xl mb-3">❌</div>
+            <h3 className="font-display text-2xl font-bold text-red-700 mb-2">Payment Failed</h3>
+            <p className="text-red-600 text-sm mb-4">{error || "The M-PESA transaction was not completed."}</p>
+            <button onClick={() => { setSuccess(null); setPaymentStatus(null); }} className="btn-terracotta py-2 px-6">Try Again</button>
+          </div>
+        )}
+
+        <div className="bg-white rounded-lg p-4 mt-4 border border-safari-200 text-left">
+          <p className="text-safari-700 text-sm mb-1">Confirmation Code:</p>
+          <p className="font-bold text-lg text-safari-900 mb-3">{success.confirmationCode}</p>
+          <p className="text-safari-600 text-sm flex justify-between">
+            <span>Total Amount:</span>
+            <strong className="text-obsidian-900">KES {success.totalAmount?.toLocaleString()}</strong>
+          </p>
+        </div>
       </div>
     );
   }
