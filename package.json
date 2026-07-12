@@ -6,7 +6,7 @@
     "defaults"
   ],
   "engines": {
-    "node": "20.x"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "cross-env TZ=UTC next dev",
