@@ -13,6 +13,10 @@ import SetNecessaryCookies from "./SetNecessaryCookies";
 import { getOneDoc } from "@/lib/db/getOperationDB";
 import { headers } from "next/headers";
 
+if (typeof globalThis.__dirname === "undefined") {
+  globalThis.__dirname = process.cwd();
+}
+
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-playfair",
