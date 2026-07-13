@@ -107,12 +107,14 @@ export default async function AttractionDetailPage({ params }) {
             )}
           </div>
 
-              {/* Weather Widget */}
-              <div className="mb-6">
-                <WeatherWidget location={attraction.location?.county || "Bungoma"} />
-              </div>
+          {/* Sidebar */}
+          <div className="space-y-6">
+            {/* Weather Widget */}
+            <div className="mb-6">
+              <WeatherWidget location={attraction.location?.county || "Bungoma"} />
+            </div>
 
-              {/* Pricing card */}
+            {/* Pricing card */}
               <div className="bg-white rounded-2xl shadow-card-terracotta p-6 sticky top-24">
                 <h3 className="font-display text-xl font-bold text-obsidian-800 mb-5 beadwork-border pb-4">Entry Fees (KES)</h3>
                 <div className="space-y-4">
