@@ -30,10 +30,7 @@ export async function POST(request) {
           parts: [{ text: "Understood! I'm ready to assist travelers with their Bungoma Tours queries!" }],
         },
         ...chatHistory
-      ],
-      generationConfig: {
-        maxOutputTokens: 200,
-      },
+      ]
     });
 
     const result = await chat.sendMessage(message);
