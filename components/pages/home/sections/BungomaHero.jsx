@@ -3,7 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
 
-const HERO_IMAGES = [
+const DEFAULT_HERO_IMAGES = [
   {
     src: "https://images.unsplash.com/photo-1516426122078-c23e76319801?w=1600&q=85",
     alt: "Maasai Mara Wildlife Reserve",
@@ -21,22 +21,26 @@ const HERO_IMAGES = [
   },
 ];
 
-export function BungomaHero() {
+export function BungomaHero({ cmsData }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const heroData = cmsData?.hero || {};
+  const images = heroData.images?.length > 0 ? heroData.images : DEFAULT_HERO_IMAGES;
 
   useEffect(() => {
     const interval = setInterval(() => {
       setIsTransitioning(true);
       setTimeout(() => {
-        setCurrentSlide((prev) => (prev + 1) % HERO_IMAGES.length);
+        setCurrentSlide((prev) => (prev + 1) % images.length);
         setIsTransitioning(false);
       }, 400);
     }, 6000);
     return () => clearInterval(interval);
-  }, []);
+  }, [images.length]);
 
-  const slide = HERO_IMAGES[currentSlide];
+  const slide = images[currentSlide] || images[0];
+  if (!slide) return null; // safety
 
   return (
     <section className="relative h-[92vh] min-h-[640px] max-h-[900px] w-full overflow-hidden flex items-center justify-center">
@@ -46,7 +50,7 @@ export function BungomaHero() {
       >
         <Image
           src={slide.src}
-          alt={slide.alt}
+          alt={slide.alt || "Hero background"}
           fill
           priority
           sizes="100vw"
@@ -73,38 +77,37 @@ export function BungomaHero() {
         <div className="flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-1.5 mb-6 animate-slide-up">
           <span className="w-2 h-2 rounded-full bg-savanna-400 animate-pulse" />
           <span className="text-white/90 text-sm font-medium tracking-wide">
-            {slide.location}
+            {slide.location || "Kenya"}
           </span>
         </div>
 
         {/* Main headline */}
         <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black text-white leading-none mb-4 animate-slide-up [animation-delay:100ms]">
-          <span className="block">Discover</span>
-          <span className="block text-gradient-terracotta italic">Western Kenya</span>
+          <span className="block">{heroData.titleLine1 || "Discover"}</span>
+          <span className="block text-gradient-terracotta italic">{heroData.titleLine2 || "Western Kenya"}</span>
         </h1>
 
         <p className="text-white/80 text-lg md:text-xl max-w-2xl mb-10 leading-relaxed animate-slide-up [animation-delay:200ms]">
-          From the volcanic peaks of Mount Elgon to the thundering Nabuyole Falls —
-          authentic African adventures await you in Bungoma County.
+          {heroData.subtitle || "From the volcanic peaks of Mount Elgon to the thundering Nabuyole Falls — authentic African adventures await you in Bungoma County."}
         </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 animate-slide-up [animation-delay:300ms]">
           <Link href="/attractions" className="btn-terracotta text-lg px-10 py-4">
-            Explore Attractions
+            {heroData.cta1 || "Explore Attractions"}
           </Link>
           <Link href="/attractions?featured=true" className="btn-ghost-light text-lg px-10 py-4">
-            Featured Tours
+            {heroData.cta2 || "Featured Tours"}
           </Link>
         </div>
 
         {/* Stats strip */}
         <div className="flex gap-8 mt-12 animate-slide-up [animation-delay:400ms]">
-          {[
+          {(heroData.stats || [
             { label: "Attractions", value: "40+" },
             { label: "Happy Visitors", value: "12K+" },
             { label: "Counties", value: "8" },
-          ].map((stat) => (
+          ]).map((stat) => (
             <div key={stat.label} className="text-center">
               <div className="text-savanna-400 text-2xl font-bold font-display">{stat.value}</div>
               <div className="text-white/60 text-xs tracking-widest uppercase">{stat.label}</div>
@@ -115,7 +118,7 @@ export function BungomaHero() {
 
       {/* Slide indicators */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-        {HERO_IMAGES.map((_, i) => (
+        {images.map((_, i) => (
           <button
             key={i}
             id={`hero-slide-${i}`}

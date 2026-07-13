@@ -1,6 +1,7 @@
 "use client";
 import { useState, useEffect, useRef, useCallback } from "react";
 import Image from "next/image";
+import { SiteContentManager } from "./components/SiteContentManager";
 
 // ── Stat Card ──
 function StatCard({ icon, label, value, color = "terracotta" }) {
@@ -385,9 +386,10 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
       {/* Tab nav */}
-      <div className="bg-white p-1.5 rounded-xl inline-flex shadow-sm border border-[#BAE6FD]/50">
+      <div className="bg-white p-1.5 rounded-xl inline-flex flex-wrap gap-2 shadow-sm border border-[#BAE6FD]/50">
         {[
           { id: "overview", label: "📊 Overview" },
+          { id: "site-content", label: "📝 Site Content" },
           { id: "add-attraction", label: "➕ Add Attraction" },
           { id: "media-manager", label: "🖼 Media Manager" },
           { id: "seo-manager", label: "🔍 SEO Manager" },
@@ -634,6 +636,11 @@ export default function AdminDashboardPage() {
               )}
             </div>
           </div>
+        )}
+
+        {/* ── SITE CONTENT MANAGER ── */}
+        {activeTab === "site-content" && (
+          <SiteContentManager />
         )}
       </div>
   );

@@ -120,9 +120,11 @@ function SkeletonCard() {
   );
 }
 
-export function FeaturedAttractions() {
+export function FeaturedAttractions({ cmsData }) {
   const [attractions, setAttractions] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  const featuredData = cmsData?.featured || {};
 
   useEffect(() => {
     fetch("/api/attractions?featured=true&limit=6")
@@ -140,14 +142,13 @@ export function FeaturedAttractions() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <div>
           <p className="text-terracotta-600 font-semibold uppercase tracking-widest text-sm mb-3">
-            ✦ Hand-Picked Experiences
+            {featuredData.subtitle || "✦ Hand-Picked Experiences"}
           </p>
           <h2 className="section-title">
-            <span className="section-title-underline">Featured Attractions</span>
+            <span className="section-title-underline">{featuredData.title || "Featured Attractions"}</span>
           </h2>
           <p className="text-muted-foreground mt-4 max-w-xl">
-            Our experts have curated the most breathtaking and culturally rich
-            destinations across Western Kenya for your journey.
+            {featuredData.description || "Our experts have curated the most breathtaking and culturally rich destinations across Western Kenya for your journey."}
           </p>
         </div>
         <Link
@@ -155,7 +156,7 @@ export function FeaturedAttractions() {
           id="view-all-attractions-link"
           className="shrink-0 btn-terracotta"
         >
-          View All Attractions
+          {featuredData.cta || "View All Attractions"}
         </Link>
       </div>
 

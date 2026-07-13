@@ -1,6 +1,6 @@
 import Image from "next/image";
 
-const HIGHLIGHTS = [
+const DEFAULT_HIGHLIGHTS = [
   {
     icon: "🏔️",
     title: "Mount Elgon",
@@ -31,27 +31,29 @@ const HIGHLIGHTS = [
   },
 ];
 
-export function AttractionHighlights() {
+export function AttractionHighlights({ cmsData }) {
+  const highlightData = cmsData?.highlights || {};
+  const items = highlightData.items?.length > 0 ? highlightData.items : DEFAULT_HIGHLIGHTS;
+
   return (
     <section className="py-20 px-4 md:px-8 bg-gradient-to-b from-sand-50 to-white">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-14">
           <p className="text-terracotta-600 font-semibold uppercase tracking-widest text-sm mb-3">
-            ✦ Iconic Destinations
+            {highlightData.subtitle || "✦ Iconic Destinations"}
           </p>
-          <h2 className="section-title mb-4">Kenya&apos;s Natural Wonders</h2>
+          <h2 className="section-title mb-4">{highlightData.title || "Kenya's Natural Wonders"}</h2>
           <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
-            From volcanic peaks to ancient forests, Western Kenya is home to
-            some of Africa&apos;s most spectacular and least-visited natural attractions.
+            {highlightData.description || "From volcanic peaks to ancient forests, Western Kenya is home to some of Africa's most spectacular and least-visited natural attractions."}
           </p>
         </div>
 
         {/* Highlights grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {HIGHLIGHTS.map((item, i) => (
+          {items.map((item, i) => (
             <div
-              key={item.title}
+              key={item.title || i}
               className="group relative overflow-hidden rounded-2xl h-72 cursor-pointer"
               style={{ animationDelay: `${i * 100}ms` }}
             >
@@ -64,7 +66,7 @@ export function AttractionHighlights() {
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
               {/* Gradient overlay */}
-              <div className={`absolute inset-0 bg-gradient-to-t ${item.color}/80 to-transparent opacity-80`} />
+              <div className={`absolute inset-0 bg-gradient-to-t ${item.color || "from-obsidian-900 to-obsidian-700"}/80 to-transparent opacity-80`} />
 
               {/* Content */}
               <div className="absolute inset-0 flex flex-col justify-end p-5 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">

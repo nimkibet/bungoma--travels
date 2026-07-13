@@ -6,6 +6,7 @@ import { WhyBungomaSection } from "@/components/pages/home/sections/WhyBungomaSe
 import { FeaturedAttractions } from "@/components/pages/home/sections/FeaturedAttractions";
 import { Reviews } from "@/components/pages/home/sections/Reviews";
 import { auth } from "@/lib/auth";
+import { getOneDoc } from "@/lib/db/getOperationDB";
 import { Suspense } from "react";
 
 export const metadata = {
@@ -42,18 +43,22 @@ function ReviewsSkeleton() {
 
 export default async function HomePage() {
   const session = await auth();
+  
+  // Fetch CMS Data for homepage
+  const pageDataRaw = await getOneDoc("PageContent", { page: "home" }, [], false);
+  const pageData = pageDataRaw?.content || {};
 
   return (
     <>
       <header className="relative">
         <Nav type="home" className="absolute left-0 top-0 z-10" session={session} />
-        <BungomaHero />
+        <BungomaHero cmsData={pageData} />
       </header>
 
       <main className="mx-auto w-full overflow-hidden">
-        <AttractionHighlights />
-        <FeaturedAttractions />
-        <WhyBungomaSection />
+        <AttractionHighlights cmsData={pageData} />
+        <FeaturedAttractions cmsData={pageData} />
+        <WhyBungomaSection cmsData={pageData} />
         <Suspense fallback={<ReviewsSkeleton />}>
           <Reviews />
         </Suspense>
