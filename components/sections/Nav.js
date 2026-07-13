@@ -74,7 +74,7 @@ export async function Nav({ className, type = "default", session, ...props }) {
   return (
     <nav
       className={cn(
-        "flex h-[70px] w-full items-center justify-end px-[5%] shadow-lg lg:h-[90px] lg:justify-between",
+        "flex lg:grid lg:grid-cols-[1fr_auto_1fr] h-[70px] w-full items-center justify-end px-[5%] shadow-lg lg:h-[90px]",
         types[type].nav,
         className,
       )}
@@ -89,15 +89,15 @@ export async function Nav({ className, type = "default", session, ...props }) {
 
       {/* big screen start */}
       <ActiveNavLink
-        className={"hidden h-full lg:flex lg:items-center lg:gap-8"}
+        className={"hidden h-full lg:flex lg:items-center lg:gap-4 justify-self-start"}
       />
 
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 lg:static lg:transform-none lg:flex lg:justify-center">
         <Logo className={"h-[36px] w-fit"} otherFill={types[type].logoFill} />
       </div>
 
       {isLoggedIn === true ? (
-        <div className="hidden lg:flex lg:items-center lg:gap-5">
+        <div className="hidden lg:flex lg:items-center lg:gap-5 justify-self-end">
           <Button
             className={cn("p-2 text-inherit", types[type].btnFavorite)}
             variant={"link"}
@@ -132,8 +132,8 @@ export async function Nav({ className, type = "default", session, ...props }) {
           </div>
         </div>
       ) : (
-        <div className="hidden lg:flex lg:items-center lg:gap-[32px]">
-          <Button asChild variant="link" className={"text-inherit"}>
+        <div className="hidden lg:flex lg:items-center lg:gap-6 justify-self-end">
+          <Button asChild variant="link" className={"text-inherit px-0"}>
             <Link href={routes.login.path}>{routes.login.title}</Link>
           </Button>
           <Button
