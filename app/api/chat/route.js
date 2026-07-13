@@ -11,7 +11,7 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: "AI is sleeping right now." }, { status: 500 });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     // Format history for Gemini
     const chatHistory = (history || []).map(msg => ({

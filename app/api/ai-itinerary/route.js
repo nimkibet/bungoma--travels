@@ -13,7 +13,7 @@ export async function POST(request) {
       return NextResponse.json({ success: false, error: "GEMINI_API_KEY is not configured" }, { status: 500 });
     }
 
-    const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
     const prompt = `You are an expert travel agent specializing in Western Kenya (specifically Bungoma, Kakamega, Mount Elgon, and surrounding areas).
 Generate a realistic, logical, day-by-day itinerary based on the following preferences:
