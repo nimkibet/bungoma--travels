@@ -12,7 +12,7 @@ import { MaintenanceNotice } from "./MaintenanceNotice";
 import SetNecessaryCookies from "./SetNecessaryCookies";
 import { getOneDoc } from "@/lib/db/getOperationDB";
 import { headers } from "next/headers";
-
+import { LiveChat } from "@/components/sections/LiveChat";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -71,8 +71,6 @@ export default async function RootLayout({ children }) {
     }
   }
 
-
-
   const websiteConfig = await getOneDoc("WebsiteConfig", {}, ["websiteConfig"], 60);
   const maintenanceMode = websiteConfig?.maintenanceMode ?? { enabled: false };
   const alloweRoutesWhileMaintenance = maintenanceMode?.allowlistedRoutes ?? [];
@@ -105,6 +103,7 @@ export default async function RootLayout({ children }) {
         <NextTopLoader showSpinner={false} color="#dc440f" height={3} />
         <Toaster richColors closeButton expand position="top-right" />
         <SetNecessaryCookies />
+        <LiveChat />
       </body>
     </html>
   );
