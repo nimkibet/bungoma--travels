@@ -58,8 +58,9 @@ export function BungomaHero({ cmsData }) {
         />
       </div>
 
-      {/* Multi-layered overlay: deep obsidian at bottom, terracotta tint */}
-      <div className="absolute inset-0 bg-gradient-to-t from-obsidian-950/90 via-obsidian-900/50 to-transparent" />
+      {/* Multi-layered overlay: base dark tint, deep obsidian at bottom, terracotta tint */}
+      <div className="absolute inset-0 bg-black/40" />
+      <div className="absolute inset-0 bg-gradient-to-t from-obsidian-950/90 via-obsidian-900/60 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-r from-terracotta-900/40 via-transparent to-transparent" />
 
       {/* Animated beadwork border at bottom */}
