@@ -18,11 +18,12 @@ import { getUserDetails } from "@/lib/services/user";
 
 export async function Nav({ className, type = "default", session, ...props }) {
   const isLoggedIn = !!session?.user;
-  let nameOfUser, avatar;
+  let nameOfUser, avatar, isAdmin = false;
   if (isLoggedIn) {
     const userData = await getUserDetails(session?.user?.id);
     avatar = userData.profileImage;
     nameOfUser = userData.firstName + " " + userData.lastName;
+    isAdmin = userData.role === "admin";
   }
   const types = {
     home: {
@@ -61,6 +62,14 @@ export async function Nav({ className, type = "default", session, ...props }) {
       icon: <Image src={settings} alt="settings_icon" height={18} width={18} />,
     },
   ];
+
+  if (isLoggedIn && isAdmin) {
+    sideBarLinksUser.push({
+      title: "Admin Dashboard",
+      href: "/dashboard/admin",
+      icon: <span className="text-terracotta-600 text-lg">🛡️</span>,
+    });
+  }
 
   return (
     <nav
