@@ -42,8 +42,10 @@ export default function AttractionsMap() {
   return (
     <MapContainer center={center} zoom={9} className="w-full h-full z-0 relative">
       <TileLayer
-        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://maps.google.com">Google Maps</a>'
+        url="http://mt1.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}"
+        maxZoom={20}
+        subdomains={['mt0', 'mt1', 'mt2', 'mt3']}
       />
       {attractions.map(attraction => {
         const { lat, lng } = attraction.location?.coordinates || {};

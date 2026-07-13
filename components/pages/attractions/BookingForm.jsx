@@ -5,8 +5,12 @@ import Link from "next/link";
 
 export function BookingForm({ attractionSlug, entryFee, session }) {
   const router = useRouter();
+  const defaultDate = new Date();
+  defaultDate.setDate(defaultDate.getDate() + 3);
+  const formattedDefaultDate = defaultDate.toISOString().split("T")[0];
+
   const [form, setForm] = useState({
-    travelDate: "",
+    travelDate: formattedDefaultDate,
     citizens: 0,
     residents: 0,
     foreigners: 0,

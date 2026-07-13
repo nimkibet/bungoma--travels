@@ -64,19 +64,6 @@ export function ActiveNavLink({ className, ...props }) {
         className={"h-[inherit] rounded-none px-4 py-2 font-bold transition-all duration-200"}
       >
         <Link
-          href="/ai-planner"
-          className={cn("inline-flex items-center gap-2 text-sm", activeLink("/ai-planner"))}
-        >
-          <span>✨ AI Planner</span>
-        </Link>
-      </Button>
-
-      <Button
-        asChild
-        variant={"link"}
-        className={"h-[inherit] rounded-none px-4 py-2 font-bold transition-all duration-200"}
-      >
-        <Link
           href="/interactive-map"
           className={cn("inline-flex items-center gap-2 text-sm", activeLink("/interactive-map"))}
         >

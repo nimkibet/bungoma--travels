@@ -196,7 +196,7 @@ function AddAttractionForm({ onSuccess, initialData }) {
       )}
 
       <button type="submit" id="add-attraction-submit" disabled={loading} className="w-full py-3.5 rounded-xl bg-[#EA580C] hover:bg-[#C2410C] text-white font-bold shadow-lg shadow-[#EA580C]/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
-        {loading ? "Processing..." : duplicateData ? "Duplicate Attraction" : "Create Attraction"}
+        {loading ? "Processing..." : initialData ? "Duplicate Attraction" : "Create Attraction"}
       </button>
     </form>
   );

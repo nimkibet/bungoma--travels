@@ -19,7 +19,32 @@ export function SiteContentManager() {
       const res = await fetch(`/api/content?page=${page}`);
       const data = await res.json();
       if (data.success) {
-        setContent(data.content || {});
+        const defaultHome = {
+          hero: {
+            titleLine1: "Discover",
+            titleLine2: "Western Kenya",
+            subtitle: "From the volcanic peaks of Mount Elgon to the cascading waters of Nabuyole, experience authentic safaris and cultural tours that go beyond the ordinary.",
+          },
+          highlights: {
+            title: "Kenya's Natural Wonders",
+            subtitle: "✦ Iconic Destinations",
+            description: "From volcanic peaks to ancient forests, explore the diverse landscapes that make Western Kenya truly unique.",
+          },
+          featured: {
+            title: "Featured Attractions",
+            subtitle: "✦ Hand-Picked Experiences",
+            description: "Our experts have curated these must-visit locations for the ultimate Western Kenya adventure.",
+            cta: "View All Attractions",
+          },
+          whyUs: {
+            titleLine1: "The Bungoma Tours ",
+            titleLine2: "Difference",
+            description: "We go beyond ordinary tourism. Our deep roots in Western Kenya allow us to provide authentic, immersive experiences you won't find in standard guidebooks.",
+          }
+        };
+
+        const loadedContent = data.content && Object.keys(data.content).length > 0 ? data.content : defaultHome;
+        setContent(loadedContent);
       } else {
         setMsg({ type: "error", text: data.error });
       }

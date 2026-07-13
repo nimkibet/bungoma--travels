@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { Attraction } from "@/lib/db/models";
 import { BookingForm } from "@/components/pages/attractions/BookingForm";
 import { auth } from "@/lib/auth";
+import { WeatherWidget } from "@/components/pages/attractions/WeatherWidget";
 
 async function getAttraction(slug) {
   if (mongoose.connection.readyState === 0) {
@@ -106,47 +107,50 @@ export default async function AttractionDetailPage({ params }) {
             )}
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Pricing card */}
-            <div className="bg-white rounded-2xl shadow-card-terracotta p-6 sticky top-24">
-              <h3 className="font-display text-xl font-bold text-obsidian-800 mb-5 beadwork-border pb-4">Entry Fees (KES)</h3>
-              <div className="space-y-4">
-                {attraction.entryFee?.citizen > 0 && (
-                  <div className="flex justify-between items-center p-3 bg-safari-50 rounded-xl border border-safari-200">
-                    <span className="text-safari-800 font-semibold flex items-center gap-2">🇰🇪 Kenyan Citizen</span>
-                    <span className="font-bold text-safari-700 text-lg">KES {attraction.entryFee.citizen.toLocaleString()}</span>
-                  </div>
-                )}
-                {attraction.entryFee?.resident > 0 && (
-                  <div className="flex justify-between items-center p-3 bg-savanna-50 rounded-xl border border-savanna-200">
-                    <span className="text-savanna-800 font-semibold flex items-center gap-2">🌍 East African Resident</span>
-                    <span className="font-bold text-savanna-700 text-lg">KES {attraction.entryFee.resident.toLocaleString()}</span>
-                  </div>
-                )}
-                {attraction.entryFee?.foreigner > 0 && (
-                  <div className="flex justify-between items-center p-3 bg-terracotta-50 rounded-xl border border-terracotta-200">
-                    <span className="text-terracotta-800 font-semibold flex items-center gap-2">✈️ International Visitor</span>
-                    <span className="font-bold text-terracotta-700 text-lg">KES {attraction.entryFee.foreigner.toLocaleString()}</span>
-                  </div>
-                )}
-                {(!attraction.entryFee?.citizen && !attraction.entryFee?.resident && !attraction.entryFee?.foreigner) && (
-                  <p className="text-center text-safari-600 font-semibold py-4">🎉 Free Entry</p>
-                )}
+              {/* Weather Widget */}
+              <div className="mb-6">
+                <WeatherWidget location={attraction.location?.county || "Bungoma"} />
               </div>
 
-              {/* Booking form */}
-              <div className="mt-6 pt-6 border-t border-sand-200">
-                <BookingForm
-                  attractionSlug={attraction.slug}
-                  entryFee={attraction.entryFee}
-                  session={session}
-                />
+              {/* Pricing card */}
+              <div className="bg-white rounded-2xl shadow-card-terracotta p-6 sticky top-24">
+                <h3 className="font-display text-xl font-bold text-obsidian-800 mb-5 beadwork-border pb-4">Entry Fees (KES)</h3>
+                <div className="space-y-4">
+                  {attraction.entryFee?.citizen > 0 && (
+                    <div className="flex justify-between items-center p-3 bg-safari-50 rounded-xl border border-safari-200">
+                      <span className="text-safari-800 font-semibold flex items-center gap-2">🇰🇪 Kenyan Citizen</span>
+                      <span className="font-bold text-safari-700 text-lg">KES {attraction.entryFee.citizen.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {attraction.entryFee?.resident > 0 && (
+                    <div className="flex justify-between items-center p-3 bg-savanna-50 rounded-xl border border-savanna-200">
+                      <span className="text-savanna-800 font-semibold flex items-center gap-2">🌍 East African Resident</span>
+                      <span className="font-bold text-savanna-700 text-lg">KES {attraction.entryFee.resident.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {attraction.entryFee?.foreigner > 0 && (
+                    <div className="flex justify-between items-center p-3 bg-terracotta-50 rounded-xl border border-terracotta-200">
+                      <span className="text-terracotta-800 font-semibold flex items-center gap-2">✈️ International Visitor</span>
+                      <span className="font-bold text-terracotta-700 text-lg">KES {attraction.entryFee.foreigner.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {(!attraction.entryFee?.citizen && !attraction.entryFee?.resident && !attraction.entryFee?.foreigner) && (
+                    <p className="text-center text-safari-600 font-semibold py-4">🎉 Free Entry</p>
+                  )}
+                </div>
+
+                {/* Booking form */}
+                <div className="mt-6 pt-6 border-t border-sand-200">
+                  <BookingForm
+                    attractionSlug={attraction.slug}
+                    entryFee={attraction.entryFee}
+                    session={session}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </main>
-    </>
-  );
-}
+        </main>
+      </>
+    );
+  }
