@@ -10,9 +10,9 @@ export function ActiveNavLink({ className, ...props }) {
 
   const activeLink = (link) => {
     if (pathname.startsWith(link)) {
-      return "border-b-4 border-terracotta-600 text-terracotta-600";
+      return "border-b-4 border-terracotta-600 text-terracotta-500";
     }
-    return "text-obsidian-700 hover:text-terracotta-600";
+    return "text-inherit hover:text-terracotta-400";
   };
 
   return (
@@ -24,7 +24,7 @@ export function ActiveNavLink({ className, ...props }) {
       >
         <Link
           href={routes.attractions.path}
-          className={cn("inline-flex items-center gap-2 text-sm", activeLink(routes.attractions.path))}
+          className={cn("inline-flex items-center gap-2 text-base font-semibold", activeLink(routes.attractions.path))}
         >
           {/* Compass Icon */}
           <svg
@@ -52,7 +52,7 @@ export function ActiveNavLink({ className, ...props }) {
       >
         <Link
           href="/package-builder"
-          className={cn("inline-flex items-center gap-2 text-sm", activeLink("/package-builder"))}
+          className={cn("inline-flex items-center gap-2 text-base font-semibold", activeLink("/package-builder"))}
         >
           <span>🎒 Build Package</span>
         </Link>
@@ -65,7 +65,7 @@ export function ActiveNavLink({ className, ...props }) {
       >
         <Link
           href="/interactive-map"
-          className={cn("inline-flex items-center gap-2 text-sm", activeLink("/interactive-map"))}
+          className={cn("inline-flex items-center gap-2 text-base font-semibold", activeLink("/interactive-map"))}
         >
           <span>🗺️ Map</span>
         </Link>
