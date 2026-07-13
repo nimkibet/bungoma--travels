@@ -1,7 +1,22 @@
 import { NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import mongoose from "mongoose";
+import { Attraction } from "@/lib/db/models";
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
+
+async function getAttractionsList() {
+  try {
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(process.env.MONGODB_URI);
+    }
+    const attractions = await Attraction.find({ isActive: true }).select('title category').lean();
+    return attractions.map(a => `${a.title} (${a.category})`).join(", ");
+  } catch (err) {
+    console.error("DB Error in chat:", err);
+    return "Mount Elgon, Nabuyole Falls, Crying Stone of Kakamega";
+  }
+}
 
 export async function POST(request) {
   try {
@@ -12,6 +27,7 @@ export async function POST(request) {
     }
 
     const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
+    const attractionsStr = await getAttractionsList();
 
     // Format history for Gemini
     const chatHistory = (history || []).map(msg => ({
@@ -23,7 +39,7 @@ export async function POST(request) {
       history: [
         {
           role: "user",
-          parts: [{ text: "You are an enthusiastic and helpful travel assistant for Bungoma Tours, a premium travel agency in Western Kenya. Keep answers concise, polite, and directly address the user's travel questions. You can recommend visiting Mount Elgon, Nabuyole Falls, crying stone of Kakamega, and the diverse culture of Western Kenya." }],
+          parts: [{ text: `You are an enthusiastic and helpful travel assistant for Bungoma Tours, a premium travel agency in Western Kenya. Keep answers concise, polite, and directly address the user's travel questions. Our actual available attractions are: ${attractionsStr}. Do not invent or hallucinate other tours, only recommend what we actually have.` }],
         },
         {
           role: "model",

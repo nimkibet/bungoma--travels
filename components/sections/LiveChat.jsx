@@ -89,19 +89,32 @@ export function LiveChat() {
 
           {/* Messages */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-sand-50/50">
-            {messages.map((msg, idx) => (
-              <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}>
-                <div className={`max-w-[80%] rounded-2xl p-3 text-sm shadow-sm ${msg.role === "user" ? "bg-terracotta-600 text-white rounded-br-sm" : "bg-white border border-sand-200 text-obsidian-800 rounded-bl-sm"}`}>
-                  {msg.content}
+            {messages.map((msg, idx) => {
+              // Basic markdown to HTML
+              let formatted = msg.content
+                .replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold text-terracotta-700">$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n/g, '<br/>');
+              
+              return (
+                <div key={idx} className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"} animate-in fade-in slide-in-from-bottom-2 duration-300`}>
+                  <div 
+                    className={`max-w-[85%] rounded-2xl p-3.5 text-[15px] leading-relaxed shadow-md ${
+                      msg.role === "user" 
+                        ? "bg-gradient-to-br from-terracotta-500 to-terracotta-600 text-white rounded-br-sm" 
+                        : "bg-white border border-sand-200 text-obsidian-800 rounded-bl-sm"
+                    }`}
+                    dangerouslySetInnerHTML={{ __html: formatted }}
+                  />
                 </div>
-              </div>
-            ))}
+              );
+            })}
             {loading && (
-              <div className="flex justify-start">
-                <div className="bg-white border border-sand-200 rounded-2xl rounded-bl-sm p-3 shadow-sm flex items-center gap-1.5">
-                  <span className="w-1.5 h-1.5 bg-terracotta-400 rounded-full animate-bounce" />
-                  <span className="w-1.5 h-1.5 bg-terracotta-400 rounded-full animate-bounce delay-100" />
-                  <span className="w-1.5 h-1.5 bg-terracotta-400 rounded-full animate-bounce delay-200" />
+              <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2">
+                <div className="bg-white border border-sand-200 rounded-2xl rounded-bl-sm p-4 shadow-md flex items-center gap-2">
+                  <span className="w-2 h-2 bg-terracotta-400 rounded-full animate-bounce" />
+                  <span className="w-2 h-2 bg-terracotta-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                  <span className="w-2 h-2 bg-terracotta-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
                 </div>
               </div>
             )}
