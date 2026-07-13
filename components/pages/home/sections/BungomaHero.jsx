@@ -74,23 +74,23 @@ export function BungomaHero({ cmsData }) {
 
       {/* Hero Content */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-5xl mx-auto">
-        {/* Location badge */}
-        <div className="flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-1.5 mb-6 animate-slide-up">
+        {/* Main headline */}
+        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black text-white leading-none mb-4 animate-slide-up mt-16 md:mt-0">
+          <span className="block">{heroData.titleLine1 || "Discover"}</span>
+          <span className="block text-gradient-terracotta italic">{heroData.titleLine2 || "Western Kenya"}</span>
+        </h1>
+
+        <p className="text-white/80 text-lg md:text-xl max-w-2xl mb-6 leading-relaxed animate-slide-up [animation-delay:100ms]">
+          {heroData.subtitle || "From the volcanic peaks of Mount Elgon to the thundering Nabuyole Falls — authentic African adventures await you in Bungoma County."}
+        </p>
+
+        {/* Location badge (Moved here so it doesn't overlap the navbar on mobile) */}
+        <div className="flex items-center gap-2 bg-white/15 backdrop-blur-sm border border-white/25 rounded-full px-4 py-1.5 mb-10 animate-slide-up [animation-delay:200ms]">
           <span className="w-2 h-2 rounded-full bg-savanna-400 animate-pulse" />
           <span className="text-white/90 text-sm font-medium tracking-wide">
             {slide.location || "Kenya"}
           </span>
         </div>
-
-        {/* Main headline */}
-        <h1 className="font-display text-5xl md:text-7xl lg:text-8xl font-black text-white leading-none mb-4 animate-slide-up [animation-delay:100ms]">
-          <span className="block">{heroData.titleLine1 || "Discover"}</span>
-          <span className="block text-gradient-terracotta italic">{heroData.titleLine2 || "Western Kenya"}</span>
-        </h1>
-
-        <p className="text-white/80 text-lg md:text-xl max-w-2xl mb-10 leading-relaxed animate-slide-up [animation-delay:200ms]">
-          {heroData.subtitle || "From the volcanic peaks of Mount Elgon to the thundering Nabuyole Falls — authentic African adventures await you in Bungoma County."}
-        </p>
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 animate-slide-up [animation-delay:300ms]">

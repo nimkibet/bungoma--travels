@@ -27,7 +27,7 @@ export async function Nav({ className, type = "default", session, ...props }) {
   }
   const types = {
     home: {
-      nav: "rounded-[24px] px-[32px] text-white bg-black/40 backdrop-blur-md border border-white/10 shadow-xl",
+      nav: "lg:rounded-[24px] lg:px-[32px] text-white bg-obsidian-950 lg:bg-black/40 lg:backdrop-blur-md lg:border lg:border-white/10 shadow-xl",
       logoFill: "white", //valid color convention (hex, hsl, rgb, color name)
       btnFavorite: "text-inherit",
       btnSignup: "bg-white text-secondary hover:bg-white/90",
