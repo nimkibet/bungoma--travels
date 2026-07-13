@@ -33,10 +33,10 @@ export async function Nav({ className, type = "default", session, ...props }) {
       btnSignup: "bg-white text-secondary hover:bg-white/90",
     },
     default: {
-      nav: "sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-sand-200 text-secondary dark:bg-secondary",
-      logoFill: "black", //valid color convention (hex, hsl, rgb, color name)
+      nav: "sticky top-0 z-50 bg-obsidian-950/95 backdrop-blur-md border-b border-white/10 text-white shadow-xl",
+      logoFill: "white", //valid color convention (hex, hsl, rgb, color name)
       btnFavorite: "text-inherit",
-      btnSignup: "text-white bg-secondary hover:bg-secondary/90",
+      btnSignup: "bg-white text-secondary hover:bg-white/90",
     },
   };
 
